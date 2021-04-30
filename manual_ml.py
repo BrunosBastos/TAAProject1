@@ -78,15 +78,13 @@ x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=test_r
 
 
 #Optimization hyper-parameters 
-alpha_lst = [0.01, 0.05, 0.1, 0.3, 0.5, 1]
-num_iters_lst = [1]
-Lambda_lst = [0.1]
+alpha_lst = [0.1]
+num_iters_lst = [10, 50, 100, 400, 1000]
+Lambda_lst = [0.1, 0.5 , 1, 2 ,3 , 5, 10]
 
-all_Js = []
-
-train_pred = [[],[],[],[]]
-val_pred = [[],[],[],[]]
-test_pred = [[],[],[],[]]
+train_pred = [[],[],[],[],[]]
+val_pred = [[],[],[],[],[]]
+test_pred = [[],[],[],[],[]]
 
 for alpha in alpha_lst:
     for num_iters in num_iters_lst:
@@ -98,8 +96,6 @@ for alpha in alpha_lst:
 
             all_theta, all_J = oneVsAll(x_train, y_train, initial_theta, alpha, num_iters, Lambda, len(classes))
 
-            all_Js.append((alpha, num_iters,Lambda, all_J))
-
             pred = predictOneVsAll(all_theta, x_val)
             m = len(y_val)
             #Check that pred.shape  = (5000,) => rank 1 array. You need to reshape it !!!
@@ -110,6 +106,7 @@ for alpha in alpha_lst:
             val_pred[1].append(Lambda)
             val_pred[2].append(alpha)
             val_pred[3].append(num_iters)
+            val_pred[4].append(all_J)   
 
             pred = predictOneVsAll(all_theta, x_train)
             m = len(y_train)
@@ -121,6 +118,7 @@ for alpha in alpha_lst:
             train_pred[1].append(Lambda)
             train_pred[2].append(alpha)
             train_pred[3].append(num_iters)
+            train_pred[4].append(all_J) 
 
             pred = predictOneVsAll(all_theta, x_test)
             m = len(y_test)
@@ -132,10 +130,14 @@ for alpha in alpha_lst:
             test_pred[1].append(Lambda)
             test_pred[2].append(alpha)
             test_pred[3].append(num_iters)
+            test_pred[4].append(all_J)  
             print()
 
 
-for index, (a, i, l, all_J) in enumerate(all_Js):
-    plt.plot(all_J)  #All classifiers
-    plt.title(f"a {a}  i {i}  l {l}")
-    plt.show()
+fp = open("results.txt", 'w')
+
+fp.write(str(val_pred)+'\n')
+fp.write(str(train_pred)+'\n')
+fp.write(str(test_pred)+'\n')
+
+fp.close()
